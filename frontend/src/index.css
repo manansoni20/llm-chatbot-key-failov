@@ -1,0 +1,53 @@
+:root {
+  --bg-app: #0b101b;
+  --bg-sidebar: #111827;
+  --bg-surface: #151e30;
+  --bg-surface-elevated: #1b263b;
+  --bg-user-bubble: #2563eb;
+  --border-subtle: rgba(148, 163, 184, 0.16);
+  --border-strong: rgba(148, 163, 184, 0.28);
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-primary: #3b82f6;
+  --accent-primary-hover: #2563eb;
+  --live-bg: rgba(99, 102, 241, 0.16);
+  --live-border: rgba(129, 140, 248, 0.45);
+  --live-text: #a5b4fc;
+  --cache-bg: rgba(16, 185, 129, 0.16);
+  --cache-border: rgba(52, 211, 153, 0.45);
+  --cache-text: #6ee7b7;
+  --error-bg: rgba(239, 68, 68, 0.12);
+  --error-border: rgba(248, 113, 113, 0.4);
+  --error-text: #fca5a5;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+textarea,
+input {
+  font-family: inherit;
+}
+
+code {
+  font-family: var(--font-mono);
+}
