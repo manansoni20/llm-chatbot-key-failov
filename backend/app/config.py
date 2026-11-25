@@ -8,6 +8,13 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+DEFAULT_ALLOWED_ORIGINS = (
+    "https://lyftr-chatbot-frontend-i3xe.onrender.com,"
+    "http://localhost:3000,"
+    "http://localhost:5173"
+)
+
+
 class Settings(BaseSettings):
     """Centralized settings backed by environment variables and optional .env file."""
 
@@ -26,9 +33,7 @@ class Settings(BaseSettings):
     database_url: str = Field(default="sqlite:///./data/chatbot.db")
 
     # CORS (comma-separated origins or JSON array string)
-    allowed_origins: str = Field(
-        default="http://localhost:3000,http://localhost:5173"
-    )
+    allowed_origins: str = Field(default=DEFAULT_ALLOWED_ORIGINS)
 
     # LLM & LiteLLM gateway settings (no keys hardcoded)
     llm_model: str = Field(default="gemini/gemini-3.1-flash-lite")
@@ -60,20 +65,37 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins_list(self) -> list[str]:
-        """Parse ALLOWED_ORIGINS into a clean list of origin strings."""
+        """Parse and normalize ALLOWED_ORIGINS, excluding wildcards when credentials are enabled."""
         raw = self.allowed_origins.strip()
         if not raw:
-            return []
+            raw = DEFAULT_ALLOWED_ORIGINS
 
+        candidates: list[str]
         if raw.startswith("["):
             try:
                 parsed = json.loads(raw)
                 if isinstance(parsed, list):
-                    return [str(origin).strip() for origin in parsed if str(origin).strip()]
+                    candidates = [str(origin) for origin in parsed]
+                else:
+                    candidates = raw.split(",")
             except json.JSONDecodeError:
-                pass
+                candidates = raw.split(",")
+        else:
+            candidates = raw.split(",")
 
-        return [origin.strip() for origin in raw.split(",") if origin.strip()]
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for item in candidates:
+            origin = item.strip().strip("\"'").rstrip("/")
+            if not origin or origin == "*":
+                continue
+            if origin not in seen:
+                seen.add(origin)
+                normalized.append(origin)
+
+        if not normalized:
+            return [o.strip() for o in DEFAULT_ALLOWED_ORIGINS.split(",")]
+        return normalized
 
     @property
     def api_keys(self) -> list[str]:
